@@ -1,0 +1,214 @@
+<mvc:View
+    xmlns:rowmodes="sap.ui.table.rowmodes"
+    controllerName="sync.ca.pp.pp.approve.controller.Detail"
+    xmlns="sap.uxap"
+    xmlns:t="sap.ui.table"
+    xmlns:m="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
+    height="100%"
+    busyIndicatorDelay="0"
+>
+    <ObjectPageLayout
+        id="ObjectPageLayout"
+        showTitleInHeaderContent="true"
+        upperCaseAnchorBar="false"
+        class="sapUiNoContentPadding"
+    >
+        <headerTitle>
+            <ObjectPageDynamicHeaderTitle>
+                <expandedHeading>
+                    <m:Title
+                        id="idDetailTitle"
+                        wrapping="true"
+                    />
+                </expandedHeading>
+
+                <snappedHeading>
+                    <m:FlexBox
+                        fitContainer="true"
+                        alignItems="Center"
+                    >
+                        <m:Title text="{Plnum}" />
+                        <m:ObjectStatus
+                            class="sapUiSmallMarginBegin"
+                            active="false"
+                            inverted="true"
+                            icon="{
+                                parts: [ { path: 'Ppsts' }, { value: 'icon' } ],
+                                formatter: '.formatter.getStatus'
+                            }"
+                            state="{
+                                parts: [ { path: 'Ppsts' }, { value: 'state' } ],
+                                formatter: '.formatter.getStatus'
+                            }"
+                            text="{
+                                parts: [ { path: 'Ppsts' }, { value: 'text' } ],
+                                formatter: '.formatter.getStatus'
+                            }"
+                        />
+                    </m:FlexBox>
+                </snappedHeading>
+
+                <expandedContent />
+
+                <actions>
+                    <m:Button
+                        text="승인"
+                        type="Accept"
+                        visible="{= ${Ppsts} === 'W' }"
+                        press="onAccept"
+                        enabled="{= ${planInfo>/__allChecked} }"
+                    />
+                    <m:Button
+                        text="반려"
+                        type="Reject"
+                        visible="{= ${Ppsts} === 'W' }"
+                        press="onReject"
+                    />
+                    <m:Button
+                        icon="sap-icon://decline"
+                        tooltip="닫기"
+                        type="Transparent"
+                        press="onFlexClose"
+                    />
+                </actions>
+            </ObjectPageDynamicHeaderTitle>
+        </headerTitle>
+        <headerContent>
+            <m:FlexBox wrap="Wrap">
+                <m:HBox
+                    alignItems="Center"
+                    width="100%"
+                >
+                    <!-- 왼쪽 정보 영역 -->
+                    <m:VBox
+                        layoutData="{ path: 'layoutData', factory: '.formatter.layoutDataLeft' }"
+                        width="auto"
+                        class="sapUiTinyMarginEnd"
+                    >
+                        <!-- 생산 계획 + 주차 -->
+                        <m:HBox
+                            alignItems="Center"
+                            class="sapUiSmallMarginBottom"
+                        >
+                            <m:Label
+                                text="생산 계획"
+                                design="Bold"
+                                class="sapUiSmallMarginEnd"
+                            />
+                            <m:Text
+                                text="{= ${Pyear} + '년 ' + ${Pmonth} + '월 ' + ${Pweek} + '주차'}"
+                            />
+                        </m:HBox>
+
+                        <!-- 날짜 -->
+                        <m:HBox>
+                            <m:VBox class="sapUiSmallMarginEnd">
+                                <m:Label
+                                    text="시작일자"
+                                    design="Bold"
+                                />
+                                <m:Text
+                                    text="{ path: 'Psttr', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'yyyy-MM-dd' } }"
+                                />
+                            </m:VBox>
+                            <m:VBox>
+                                <m:Label
+                                    text="종료일자"
+                                    design="Bold"
+                                />
+                                <m:Text
+                                    text="{ path: 'Pedtr', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'yyyy-MM-dd' } }"
+                                />
+                            </m:VBox>
+                        </m:HBox>
+                    </m:VBox>
+
+                    <!-- 오른쪽 상태 영역 -->
+                    <m:VBox
+                        width="auto"
+                        class="sapUiTinyMarginBegin"
+                        alignItems="End"
+                        justifyContent="Center"
+                        layoutData="
+                                    {
+                                        'sap.ui.layout.HBoxData': {
+                                        'alignSelf': 'Center'
+                                        }
+                                    }
+                                    "
+                    >
+                        <m:ObjectStatus
+                            active="false"
+                            inverted="true"
+                            icon="{ parts: [ { path: 'Ppsts' }, { value: 'icon' } ], formatter: '.formatter.getStatus' }"
+                            state="{ parts: [ { path: 'Ppsts' }, { value: 'state' } ], formatter: '.formatter.getStatus' }"
+                            text="{ parts: [ { path: 'Ppsts' }, { value: 'text' } ], formatter: '.formatter.getStatus' }"
+                        />
+                    </m:VBox>
+                </m:HBox>
+            </m:FlexBox>
+        </headerContent>
+        <sections>
+            <ObjectPageSection title="제품목록">
+                <ObjectPageSubSection>
+                    <blocks>
+                        <t:Table
+                            id="idPlanItemTable"
+                            rows="{planInfo>/items}"
+                            selectionMode="None"
+                            ariaLabelledBy="title"
+                        >
+                            <t:rowSettingsTemplate>
+                                <t:RowSettings
+                                    highlight="{
+                                        path: 'planInfo>Checked',
+                                        formatter: '.formatter.getHighlightState'
+                                    }"
+                                />
+                            </t:rowSettingsTemplate>
+                            <t:rowMode>
+                                <rowmodes:Auto id="idRowMode" />
+                            </t:rowMode>
+                            <t:Column width="auto">
+                                <m:Label text="완제품명" />
+                                <t:template>
+                                    <m:Text text="{planInfo>Maktx}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="auto">
+                                <m:Label text="계획수량" />
+                                <t:template>
+                                    <m:ObjectNumber
+                                        number="{planInfo>Gsmng}"
+                                        unit="{planInfo>Meins}"
+                                        textAlign="End"
+                                    />
+                                </t:template>
+                            </t:Column>
+                        </t:Table>
+                        <m:HBox
+                            justifyContent="End"
+                            class="sapUiTinyMarginTop sapUiTinyMarginEnd"
+                        >
+                            <m:CheckBox
+                                text="수량을 검토하고 이상이 없음을 확인합니다."
+                                visible="{= ${Ppsts} === 'W' }"
+                                select=".onSelectAllChecked"
+                                selected="{planInfo>/__allChecked}"
+                            />
+                        </m:HBox>
+                        <m:MessageStrip
+                            visible="{= ${Ppsts} === 'R' }"
+                            text="{rejectFeed>/Discription}"
+                            type="Error"
+                            showIcon="true"
+                            showCloseButton="false"
+                        />
+                    </blocks>
+                </ObjectPageSubSection>
+            </ObjectPageSection>
+        </sections>
+    </ObjectPageLayout>
+</mvc:View>
