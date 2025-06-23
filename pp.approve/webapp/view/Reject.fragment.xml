@@ -1,0 +1,35 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="idRejectDialog"
+        title="반려 사유를 입력하세요."
+        draggable="true"
+        resizable="true"
+    >
+        <VBox class="sapUiSmallMargin">
+            <TextArea
+                value="{rejectModel>/reason}"
+                liveChange=".onRejectTextChange"
+                rows="4"
+                width="100%"
+            />
+        </VBox>
+        <beginButton>
+            <Button
+                id="confirmRejectButton"
+                text="확인"
+                type="Emphasized"
+                press=".onRejectConfirm"
+                enabled="false"
+            />
+        </beginButton>
+        <endButton>
+            <Button
+                text="취소"
+                press=".onRejectCancel"
+            />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,203 @@
+<mvc:View
+    xmlns:core="sap.ui.core"
+    controllerName="sync.ca.pp.pp.approve.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:ce="sap.ui.codeeditor"
+>
+    <f:DynamicPage
+        id="page"
+        showFooter="false"
+        toggleHeaderOnTitleClick="true"
+    >
+        <f:header>
+            <f:DynamicPageHeader pinnable="true">
+                <f:content>
+                    <fb:FilterBar
+                        id="filterbar"
+                        persistencyKey="myPersKey"
+                        useToolbar="false"
+                        search=".onSearch"
+                        filterChange=".onFilterChange"
+                        afterVariantLoad=".onAfterVariantLoad"
+                    >
+                        <fb:filterGroupItems>
+                            <fb:FilterGroupItem
+                                name="생산계획 ID"
+                                label="생산계획 ID"
+                                groupName="Group1"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <MultiComboBox
+                                        name="생산계획 ID"
+                                        id="idMultiComboBox"
+                                        selectionChange=".onSelectionChange"
+                                        items="{
+                                            path: '/PlanHeaderSet',
+                                            templateShareable: true
+											}"
+                                        placeholder="{i18n>multiComboBoxPlaceholder}"
+                                    >
+                                        <core:Item
+                                            key="{Plnum}"
+                                            text="{Plnum} - {Pyear}년 {Pmonth}월 {Pweek}주차"
+                                        />
+                                    </MultiComboBox>
+                                </fb:control>
+                            </fb:FilterGroupItem>
+                            <fb:FilterGroupItem
+                                name="생산계획기간"
+                                label="생산계획기간"
+                                groupName="Group2"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <DateRangeSelection
+                                        id="idDateRangeSelection"
+                                        placeholder="{i18n>dateRangeHint}"
+                                    />
+                                </fb:control>
+                            </fb:FilterGroupItem>
+                        </fb:filterGroupItems>
+                    </fb:FilterBar>
+                </f:content>
+            </f:DynamicPageHeader>
+        </f:header>
+
+        <f:content>
+            <IconTabBar
+                id="idIconTabBar"
+                select=".onFilterSelect"
+            >
+                <items>
+                    <IconTabFilter
+                        showAll="true"
+                        text="생산계획"
+                        key="all"
+                        count="{count>/AllCount}"
+                    />
+                    <IconTabSeparator />
+                    <IconTabFilter
+                        icon="sap-icon://alert"
+                        iconColor="Critical"
+                        text="대기"
+                        key="wait"
+                        count="{count>/PendingCount}"
+                    />
+                    <IconTabFilter
+                        icon="sap-icon://accept"
+                        iconColor="Positive"
+                        text="승인"
+                        key="approve"
+                        count="{count>/ApprovedCount}"
+                    />
+                    <IconTabFilter
+                        icon="sap-icon://decline"
+                        iconColor="Negative"
+                        text="반려"
+                        key="reject"
+                        count="{count>/RejectedCount}"
+                    />
+                </items>
+                <content>
+                    <Table
+                        id="idProducts"
+                        headerText="생산계획 목록"
+                        items="{/PlanHeaderSet}"
+                        itemPress=".onListItemPress"
+                        updateFinished="onUpdateFinished"
+                        autoPopinMode="true"
+                        growing="true"
+                        growingThreshold="10"
+                    >
+                        <columns>
+                            <Column
+                                width="3em"
+                                importance="High"
+                                hAlign="Center"
+                            >
+                                <Text text="상태" />
+                            </Column>
+                            <Column
+                                width="8em"
+                                importance="High"
+                                hAlign="Center"
+                                popinDisplay="Inline"
+                            >
+                                <Text text="생산계획ID" />
+                            </Column>
+                            <Column
+                                importance="Medium"
+                                width="6em"
+                                hAlign="Center"
+                                popinDisplay="Inline"
+                            >
+                                <Text text="생산 연도" />
+                            </Column>
+                            <Column
+                                popinDisplay="Inline"
+                                importance="Medium"
+                                width="6em"
+                                hAlign="Center"
+                            >
+                                <Text text="생산 월" />
+                            </Column>
+                            <Column
+                                importance="Medium"
+                                width="6em"
+                                hAlign="Center"
+                                popinDisplay="Inline"
+                            >
+                                <Text text="생산 주차" />
+                            </Column>
+                            <Column
+                                importance="Low"
+                                width="6em"
+                                hAlign="Center"
+                                popinDisplay="Inline"
+                            >
+                                <Text text="플랜트명" />
+                            </Column>
+                            <Column
+                                importance="High"
+                                width="15em"
+                                hAlign="Center"
+                                popinDisplay="Inline"
+                            >
+                                <Text text="계획 기간" />
+                            </Column>
+                            <Column
+                                importance="Low"
+                                hAlign="Center"
+                                popinDisplay="Inline"
+                            >
+                                <Text text="MRP ID" />
+                            </Column>
+                        </columns>
+
+                        <items>
+                            <ColumnListItem type="Navigation">
+                                <core:Icon
+                                    src="{= ${Ppsts} === 'A' ? 'sap-icon://accept' : ${Ppsts} === 'W' ? 'sap-icon://alert' : 'sap-icon://decline' }"
+                                    color="{= ${Ppsts} === 'A' ? 'green' : ${Ppsts} === 'W' ? 'orange' : 'red' }"
+                                />
+                                <ObjectIdentifier title="{Plnum}" />
+                                <Text text="{Pyear}" />
+                                <Text text="{Pmonth}" />
+                                <Text text="{Pweek}" />
+                                <Text text="{Pname}" />
+                                <Text
+                                    text="{ path: 'Psttr', type: 'sap.ui.model.odata.type.Date', formatOptions: { pattern: 'yy.MM.dd' } } ~ { path: 'Pedtr', type: 'sap.ui.model.odata.type.Date', formatOptions: { pattern: 'yy.MM.dd' } }"
+                                />
+                                <Text text="{Mrpid}" />
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </IconTabBar>
+        </f:content>
+    </f:DynamicPage>
+</mvc:View>

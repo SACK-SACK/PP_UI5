@@ -1,0 +1,29 @@
+<mvc:View
+    xmlns:smartchart="sap.ui.comp.smartchart"
+    xmlns:smartfilterbar="sap.ui.comp.smartfilterbar"
+    controllerName="sync.ca.pp.pp.stats.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+>
+    <Page
+        id="page"
+        title="{i18n>title}"
+    >
+        <smartfilterbar:SmartFilterBar
+            id="smartFilterBar"
+            entitySet="ZCA_CDS_V_012"
+            liveMode="true"
+            useToolbar="true"
+        />
+
+        <smartchart:SmartChart
+            id="smartChart"
+            entitySet="ZCA_CDS_V_012"
+            smartFilterId="smartFilterBar"
+            chartType="100_stacked_bar"
+            header="생산실적 통계"
+            useVariantManagement="true"
+            useChartPersonalisation="true"
+        />
+    </Page>
+</mvc:View>
