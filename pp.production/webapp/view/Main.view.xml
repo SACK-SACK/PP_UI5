@@ -1,0 +1,139 @@
+<mvc:View
+    controllerName="sync.ca.pp.pp.production.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:m="sap.m"
+    xmlns:f="sap.f"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:core="sap.ui.core"
+>
+    <Page
+        id="page"
+        title="{i18n>title}"
+    >
+        <f:DynamicPage
+            id="dynamicPage"
+            fitContent="true"
+        >
+            <f:header>
+                <f:DynamicPageHeader>
+                    <f:content>
+                        <fb:FilterBar
+                            id="filterbar"
+                            persistencyKey="myPersKey"
+                            useToolbar="false"
+                            search=".onSearch"
+                            filterChange=".onFilterChange"
+                            afterVariantLoad=".onAfterVariantLoad"
+                        >
+                            <fb:filterGroupItems>
+                                <fb:FilterGroupItem
+                                    name="생산오더 ID"
+                                    label="생산오더 ID"
+                                    groupName="Group1"
+                                    visibleInFilterBar="true"
+                                >
+                                    <fb:control>
+                                        <MultiComboBox
+                                            name="생산오더 ID"
+                                            id="idMultiComboBox"
+                                            selectionChange=".onSelectionChange"
+                                            items="{
+                                            path: '/ZCA_CDS_V_006',
+                                            templateShareable: true
+											}"
+                                        >
+                                            <core:Item
+                                                key="{Aufnr}"
+                                                text="{Aufnr}"
+                                            />
+                                        </MultiComboBox>
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+                                <fb:FilterGroupItem
+                                    name="생산제품"
+                                    label="생산제품"
+                                    groupName="Group2"
+                                    visibleInFilterBar="true"
+                                >
+                                    <fb:control>
+                                        <MultiComboBox
+                                            name="생산제품"
+                                            id="idMultiComboBox2"
+                                            selectionChange=".onSelectionChange2"
+                                            items="{
+												path: 'MatnrSet>/MatnrSet',
+												templateShareable: true
+											}"
+                                        >
+                                            <core:Item
+                                                key="{MatnrSet>Matnr}"
+                                                text="{MatnrSet>Matnr} {MatnrSet>Maktx}"
+                                            />
+                                        </MultiComboBox>
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+                                <fb:FilterGroupItem
+                                    name="생산일"
+                                    label="생산일"
+                                    groupName="Group3"
+                                    visibleInFilterBar="true"
+                                >
+                                    <fb:control>
+                                        <DateRangeSelection
+                                            id="idDateRangeSelection"
+                                            change="handleChange"
+                                        />
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+                            </fb:filterGroupItems>
+                        </fb:FilterBar>
+                    </f:content>
+                </f:DynamicPageHeader>
+            </f:header>
+
+            <f:content>
+                <List
+                    id="idList"
+                    items="{ path: '/ZCA_CDS_V_006',
+                            sorter:{ path:'Psday_Text', descending: false, group: true}}"
+                    headerText="Products"
+                    growing="true"
+                >
+                    <ObjectListItem
+                        title="{Aufnr}"
+                        type="Navigation"
+                        press="onListItemPress"
+                        number="{
+                            parts:[{path:'Gamng'},{path:'Meins'}],
+                            type: 'sap.ui.model.type.Unit',
+                            formatOptions: {showMeasure: false}
+			             }"
+                        numberUnit="{Meins}"
+                    >
+                        <firstStatus>
+                            <ObjectStatus
+                                icon="{= ${Phas2} === 'X' ? 'sap-icon://checklist-item' : (${Phas1} === 'X' ? 'sap-icon://add-equipment' : 'sap-icon://alert') }"
+                                text="{= ${Phas2} === 'X' ? '생산 완료' : (${Phas1} === 'X' ? '생산 진행중' : '생산 대기') }"
+                                state="{
+                                    parts: [{path: 'Phas1'}, {path: 'Phas2'}],
+                                    formatter: '.formatter.statusClass'
+                                }"
+                            />
+                        </firstStatus>
+                        <ObjectAttribute text="{Matnr} {Maktx}" />
+                        <ObjectAttribute
+                            text="{
+                            parts: [
+                                { path: 'Psday', type: 'sap.ui.model.odata.type.Date', formatOptions: { pattern: 'yyyy.MM.dd' } },
+                                { path: 'Peday', type: 'sap.ui.model.odata.type.Date', formatOptions: { pattern: 'yyyy.MM.dd' } }
+                             ],
+                            formatter: '.formatter.concatDates'
+                            }"
+                        />
+                    </ObjectListItem>
+                </List>
+            </f:content>
+        </f:DynamicPage>
+    </Page>
+</mvc:View>

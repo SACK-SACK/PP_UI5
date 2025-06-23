@@ -1,0 +1,12 @@
+ .statusGreen {
+    color: green !important;
+}
+.statusRed {
+    color: red !important;
+}
+.statusOrange {
+    color: orange !important;
+}
+.statusGray {
+    color: gray !important;
+}

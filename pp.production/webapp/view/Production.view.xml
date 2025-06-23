@@ -1,0 +1,276 @@
+<mvc:View
+    controllerName="sync.ca.pp.pp.production.controller.Production"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:m="sap.m"
+    xmlns:uxap="sap.uxap"
+    xmlns:core="sap.ui.core"
+>
+    <uxap:ObjectPageLayout
+        showTitleInHeaderContent="true"
+        upperCaseAnchorBar="false"
+    >
+        <uxap:headerTitle>
+            <uxap:ObjectPageDynamicHeaderTitle>
+                <uxap:expandedHeading>
+                    <m:Title
+                        text="생산 현황 상세 조회"
+                        wrapping="true"
+                    />
+                </uxap:expandedHeading>
+
+                <uxap:snappedHeading>
+                    <m:HBox>
+                        <!-- <m:VBox>
+                            <m:Avatar
+                                src="images/배추김치.png"
+                                class="sapUiSmallMarginEnd"
+                            />
+                        </m:VBox> -->
+                        <m:VBox>
+                            <m:Title
+                                text="생산현황 상세 조회"
+                                wrapping="true"
+                            />
+                            <m:Label text="{production>Aufnr}" />
+                        </m:VBox>
+                    </m:HBox>
+                </uxap:snappedHeading>
+
+                <uxap:expandedContent>
+                    <m:Label text="생산오더 : {production>Aufnr}" />
+                </uxap:expandedContent>
+
+                <uxap:snappedTitleOnMobile>
+                    <m:Title text="생산현황 상세 조회" />
+                </uxap:snappedTitleOnMobile>
+            </uxap:ObjectPageDynamicHeaderTitle>
+        </uxap:headerTitle>
+
+        <uxap:headerContent>
+            <m:FlexBox
+                wrap="Wrap"
+                fitContainer="true"
+            >
+                <m:Avatar
+                    src="{
+                             path: 'production>Matnr',
+                             formatter: '.formatter.formatImage'
+                            }"
+                    class="sapUiMediumMarginEnd sapUiSmallMarginBottom"
+                    displaySize="XL"
+                />
+                <m:VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                    <m:Title class="sapUiTinyMarginBottom">
+                        <m:Link
+                            text="Production Details"
+                            press="onOrderDetailsPress"
+                        />
+                    </m:Title>
+
+                    <m:HBox
+                        class="sapUiTinyMarginBottom"
+                        renderType="Bare"
+                    >
+                        <m:Label
+                            text="생산 제품:"
+                            class="sapUiTinyMarginEnd"
+                        />
+                        <m:Text text="{production>Matnr}" />
+                    </m:HBox>
+
+                    <m:HBox
+                        class="sapUiTinyMarginBottom"
+                        renderType="Bare"
+                    >
+                        <m:Label
+                            text="제품명:"
+                            class="sapUiTinyMarginEnd"
+                        />
+                        <m:Text text="{production>Maktx}" />
+                    </m:HBox>
+
+                    <m:HBox>
+                        <m:Label
+                            text="공장:"
+                            class="sapUiTinyMarginEnd"
+                        />
+                        <m:Text
+                            text="{parts:[{path:'production>Werks'},{path:'production>Pname'}]}"
+                        />
+                    </m:HBox>
+
+                    <m:HBox>
+                        <m:Label
+                            text="저장위치:"
+                            class="sapUiTinyMarginEnd"
+                        />
+                        <m:Text text="{production>Lgobe}" />
+                    </m:HBox>
+                </m:VBox>
+                <m:VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                    <m:Title class="sapUiTinyMarginBottom">
+                        <m:Link
+                            text=" "
+                            press="onOrderDetailsPress"
+                        />
+                    </m:Title>
+                    <m:HBox class="sapUiTinyMarginBottom">
+                        <m:Label
+                            text="생산 시작일:"
+                            class="sapUiSmallMarginEnd"
+                        />
+                        <m:Text
+                            text="{
+                                path: 'production>Psday',
+                                type: 'sap.ui.model.odata.type.DateTime',
+                                formatOptions: { pattern: 'yyyy.MM.dd' }
+                            }"
+                        />
+                    </m:HBox>
+
+                    <m:HBox
+                        class="sapUiTinyMarginBottom"
+                        renderType="Bare"
+                    >
+                        <m:Label
+                            text="생산 종료일:"
+                            class="sapUiSmallMarginEnd"
+                        />
+                        <m:Text
+                            text="{
+                                path: 'production>Peday',
+                                type: 'sap.ui.model.odata.type.DateTime',
+                                formatOptions: { pattern: 'yyyy.MM.dd' }
+                            }"
+                        />
+                    </m:HBox>
+                    <m:HBox class="sapUiTinyMarginBottom">
+                        <m:Label
+                            text="공정:"
+                            class="sapUiSmallMarginEnd"
+                        />
+                        <m:Text
+                            text="{parts:[{path:'production>Plnnr'},{path:'production>Ltxa1'}]}"
+                            class="sapUiSmallMarginEnd"
+                        />
+                    </m:HBox>
+
+                    <m:HBox class="sapUiTinyMarginBottom">
+                        <m:Label
+                            text="BOM:"
+                            class="sapUiSmallMarginEnd"
+                        />
+                        <m:Text
+                            text="{bomHeaderSelected>/STLNR} ({bomHeaderSelected>/BMENG}{bomHeaderSelected>/BMEIN} 기준)"
+                            class="sapUiSmallMarginEnd"
+                        />
+                    </m:HBox>
+                </m:VBox>
+
+                <m:VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                    <m:Title
+                        text="상태"
+                        class="sapUiTinyMarginBottom"
+                    />
+                    <m:ObjectStatus
+                        text="{= ${production>Phas2} === 'X' ? '생산 완료' : (${production>Phas1} === 'X' ? '생산 진행중' : '생산 대기') }"
+                        state="{= ${production>Phas2} === 'X' ? 'Success' : (${production>Phas1} === 'X' ? 'Warning' : 'Error')}"
+                        class="sapMObjectStatusLarge"
+                    />
+                </m:VBox>
+
+                <m:VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                    <m:Title
+                        text="계획 수량"
+                        class="sapUiTinyMarginBottom"
+                    />
+                    <m:ObjectStatus
+                        text="{parts:[{path:'production>Pgamng'}, {path:'production>Meins'}]}"
+                        class="sapMObjectStatusLarge"
+                    />
+                </m:VBox>
+
+                <m:VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                    <m:Title
+                        text="{= ${production>Phas2} === 'X' ? '현 생산수량' : '생산 예정 수량'}"
+                        class="sapUiTinyMarginBottom"
+                    />
+                    <m:ObjectStatus
+                        text="{parts:[{path:'production>Gamng'}, {path:'production>Meins'}]}"
+                        class="sapMObjectStatusLarge"
+                    />
+                </m:VBox>
+
+                <!-- <m:VBox class="sapUiLargeMarginEnd">
+                    <m:Title
+                        text="저장 위치"
+                        class="sapUiTinyMarginBottom"
+                    />
+                    <m:ObjectStatus
+                        text="{production>Lgobe}"
+                        class="sapMObjectStatusLarge"
+                    />
+                </m:VBox> -->
+            </m:FlexBox>
+        </uxap:headerContent>
+
+        <uxap:sections>
+            <uxap:ObjectPageSection>
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection
+                        id="goalsSectionSS1"
+                        title="[ 공정 ID : {path:'production>Plnnr'} ] {path:'production>Ltxa1'}"
+                        titleUppercase="false"
+                    >
+                        <m:Table
+                            id="idProductsTable"
+                            inset="false"
+                        >
+                            <!-- <m:headerToolbar>
+                                <m:OverflowToolbar>
+                                    <m:Title
+                                        text="[공정 ID : {path:'production>Plnnr'} ]    {path:'production>Ltxa1'}"
+                                        level="H2"
+                                    />
+                                    <m:ToolbarSpacer />
+                                </m:OverflowToolbar>
+                            </m:headerToolbar>
+
+                            <m:infoToolbar>
+                                <m:OverflowToolbar>
+                                    <m:Label
+                                        text="해당 제품을 생산하기 위해 진행되는 공정과정 입니다"
+                                    />
+                                </m:OverflowToolbar>
+                            </m:infoToolbar> -->
+
+                            <m:columns>
+                                <m:Column>
+                                    <m:Text text="공정단계" />
+                                </m:Column>
+                                <m:Column>
+                                    <m:Text text="공정명" />
+                                </m:Column>
+                                <m:Column>
+                                    <m:Text text="작업장" />
+                                </m:Column>
+                                <m:Column>
+                                    <m:Text text="작업장명" />
+                                </m:Column>
+                            </m:columns>
+
+                            <m:items>
+                                <m:ColumnListItem>
+                                    <m:Text text="{routing>Order}" />
+                                    <m:Text text="{routing>Process}" />
+                                    <m:Text text="{routing>WC}" />
+                                    <m:Text text="{routing>Wcnam}" />
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+        </uxap:sections>
+    </uxap:ObjectPageLayout>
+</mvc:View>

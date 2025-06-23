@@ -1,0 +1,228 @@
+<mvc:View
+    controllerName="sync.ca.pp.pp.orders.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:m="sap.m"
+    xmlns="sap.ui.table"
+    xmlns:u="sap.ui.unified"
+    xmlns:semantic="sap.f.semantic"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.f"
+    xmlns:fb="sap.ui.comp.filterbar"
+>
+    <m:Page
+        id="page"
+        title="{i18n>title}"
+        class="sapUiContentPadding"
+    >
+        <!-- <m:VBox>
+            <m:Image
+                src="/images/header.png"
+                alt="헤더 이미지"
+                width="100%"
+                height="200px"
+                densityAware="false"
+            />
+        </m:VBox> -->
+        <f:DynamicPage
+            id="dynamicPage"
+            fitContent="true"
+        >
+            <!-- entitySet="PPOrderSet" -->
+            <f:header>
+                <f:DynamicPageHeader>
+                    <fb:FilterBar
+                        id="filterBar"
+                        enableBasicSearch="false"
+                        search=".onFilterSearch"
+                        useToolbar="false"
+                        showGoButton="false"
+                    >
+                        <fb:filterGroupItems>
+                            <fb:FilterGroupItem
+                                name="제품"
+                                label="제품"
+                                groupName="Group1"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <m:MultiComboBox
+                                        name="제품"
+                                        id="idMultiComboBox"
+                                        selectionChange=".onSelectionChange"
+                                        items="{
+                                            path: 'MatnrSet>/MatnrSet',
+                                            templateShareable: true
+                                        }"
+                                    >
+                                        <core:Item
+                                            key="{MatnrSet>Matnr}"
+                                            text="{MatnrSet>Maktx}"
+                                        />
+                                    </m:MultiComboBox>
+                                </fb:control>
+                            </fb:FilterGroupItem>
+                        </fb:filterGroupItems>
+                    </fb:FilterBar>
+                </f:DynamicPageHeader>
+            </f:header>
+
+            <f:content>
+                <m:IconTabBar
+                    id="idIconTabBar"
+                    select=".onFilterSelect"
+                    class="sapUiResponsiveContentPadding"
+                >
+                    <m:items>
+                        <m:IconTabFilter
+                            showAll="true"
+                            count="{count>/AllCount}"
+                            text="생산오더"
+                            key="All"
+                        />
+                        <m:IconTabSeparator />
+
+                        <m:IconTabFilter
+                            icon="sap-icon://alert"
+                            iconColor="Critical"
+                            text="대기"
+                            key="Pending"
+                            count="{count>/PendingCount}"
+                        />
+
+                        <m:IconTabFilter
+                            icon="sap-icon://accept"
+                            iconColor="Positive"
+                            text="승인"
+                            key="Approved"
+                            count="{count>/ApprovedCount}"
+                        />
+
+                        <m:IconTabFilter
+                            icon="sap-icon://decline"
+                            iconColor="Negative"
+                            text="반려"
+                            key="Rejected"
+                            count="{count>/RejectedCount}"
+                        />
+                    </m:items>
+
+                    <m:content>
+                        <m:Panel width="100%">
+                            <m:headerToolbar>
+                                <m:OverflowToolbar>
+                                    <m:Title text="생산오더 목록" />
+
+                                    <m:ToolbarSpacer />
+                                    <m:Button
+                                        id="btnApprove"
+                                        visible="false"
+                                        text="승인"
+                                        type="Accept"
+                                        press="onApprove"
+                                    />
+                                    <m:Button
+                                        id="btnReject"
+                                        visible="false"
+                                        text="반려"
+                                        type="Reject"
+                                        press="onReject"
+                                    />
+                                </m:OverflowToolbar>
+                            </m:headerToolbar>
+                            <Table
+                                id="OrderTable"
+                                rows="{
+                                    path: '/PPOrderSet',
+                                    sorter: {
+                                        path: 'Psday',
+                                        descending: true
+                                    }
+                                 }"
+                                rowsUpdated="onUpdateFinished"
+                                selectionMode="Single"
+                            >
+                                <columns>
+                                    <Column width="3rem">
+                                        <m:Label text="상태" />
+                                        <template>
+                                            <core:Icon
+                                                src="{= ${Posts} === 'A' ? 'sap-icon://accept' : ${Posts} === 'R' ? 'sap-icon://decline' : 'sap-icon://alert' }"
+                                                color="{= ${Posts} === 'A' ? 'green' : ${Posts} === 'R' ? 'red' : 'orange'}"
+                                                class="{ path: 'Posts', formatter: '.formatter.getStatusIconClass' }"
+                                                size="1rem"
+                                            />
+                                        </template>
+                                    </Column>
+
+                                    <Column width="8rem">
+                                        <m:Label text="생산오더 ID" />
+                                        <template>
+                                            <m:Text text="{Aufnr}" />
+                                        </template>
+                                    </Column>
+
+                                    <Column width="8rem">
+                                        <m:Label text="생산계획 ID" />
+                                        <template>
+                                            <m:Text text="{Plnum}" />
+                                        </template>
+                                    </Column>
+
+                                    <Column width="8rem">
+                                        <m:Label text="제품" />
+                                        <template>
+                                            <m:Text text="{Matnr}" />
+                                        </template>
+                                    </Column>
+
+                                    <Column width="8rem">
+                                        <m:Label text="제품명" />
+                                        <template>
+                                            <m:Text text="{Maktx}" />
+                                        </template>
+                                    </Column>
+
+                                    <Column width="8rem">
+                                        <m:Label text="수량" />
+                                        <template>
+                                            <m:ObjectNumber
+                                                number="{ path: 'Gamng', type: 'sap.ui.model.type.Integer' }"
+                                                unit="{= ${Meins} === 'KGM' ? 'KG' : ${Meins} }"
+                                            />
+                                        </template>
+                                    </Column>
+
+                                    <Column width="8rem">
+                                        <m:Label text="공장" />
+                                        <template>
+                                            <m:Text text="{Werks} - {Pname}" />
+                                        </template>
+                                    </Column>
+
+                                    <Column width="12rem">
+                                        <m:Label text="생산일정" />
+                                        <template>
+                                            <m:DateRangeSelection
+                                                value="{
+                                        'type' :'sap.ui.model.type.DateInterval',
+                                        'parts':[{
+                                                 'type':'sap.ui.model.type.Date',
+                                                 'path':'Psday'
+                                                 },
+                                                 {'type':'sap.ui.model.type.Date',
+                                                  'path':'Peday'
+                                                  }],
+                                        'formatOptions':{ pattern: 'yyyy.MM.dd'}
+                                                 }"
+                                            />
+                                        </template>
+                                    </Column>
+                                </columns>
+                            </Table>
+                        </m:Panel>
+                    </m:content>
+                </m:IconTabBar>
+            </f:content>
+        </f:DynamicPage>
+    </m:Page>
+</mvc:View>
